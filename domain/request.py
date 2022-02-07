@@ -1,4 +1,11 @@
+import math
+
+
 class Request:
+
+    LAT_STEP = 0.008
+    LON_STEP = 0.02
+
     def __init__(self):
         self.longitude = 37.530887
         self.latitude = 55.703118
@@ -16,4 +23,21 @@ class Request:
 
     def get_l(self):
         return self.l
-    
+
+    def up_zoom(self):
+        self.zoom = self.zoom + 1 if self.zoom != 15 else 15
+
+    def down_zoom(self):
+        self.zoom = self.zoom - 1 if self.zoom != 0 else 0
+
+    def left(self):
+        self.longitude -= self.LON_STEP + math.pow(2, 15 - self.zoom)
+
+    def right(self):
+        self.longitude += self.LON_STEP + math.pow(2, 15 - self.zoom)
+
+    def up(self):
+        self.latitude += self.LAT_STEP + math.pow(2, 15 - self.zoom)
+
+    def down(self):
+        self.latitude -= self.LAT_STEP + math.pow(2, 15 - self.zoom)
