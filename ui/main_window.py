@@ -28,6 +28,7 @@ class MainWindow(QWidget):
         self.post = QLabel(self)
         self.post_box = QCheckBox('Почтовый индекс', self)
         self.post_box.setChecked(False)
+        self.post_box.clicked.connect(lambda checked: self.click())
         self.map_box.addItems(['map'] + list(set(['sat', 'skl'])))
         self.pushbutton = QPushButton(self)
         self.pushbutton.setText('Искать')
