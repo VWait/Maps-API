@@ -1,29 +1,38 @@
-from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QApplication, QComboBox, QPushButton
+from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QApplication, QComboBox, QLineEdit, QPushButton
 from PyQt5.QtGui import QPixmap, QKeyEvent
 from PyQt5.QtCore import Qt
 from app_services.map_app_service import MapAppService
 from services.ya_map_service import YaMapService
 from domain.request import Request
+import requests
 
 
 class MainWindow(QWidget):
     def __init__(self, app_service: MapAppService, parent=None):
         super().__init__(parent)
         self.app_service = app_service
-        self.request = Request('map')
+        self.request = Request('map', 37.530887, 55.703118, '37.530887,55.703118')
         self.init_ui()
 
     def init_ui(self):
         self.setGeometry(100, 100, 1000, 800)
         self.map_label = QLabel(self)
         self.map_box = QComboBox(self)
+        self.label1 = QLabel(self)
+        self.label1.setText('Вид карты:')
+        self.label2 = QLabel(self)
+        self.label2.setText('Место:')
+        self.text = QLineEdit(self)
         self.map_box.addItems(['map'] + list(set(['sat', 'skl'])))
         self.pushbutton = QPushButton(self)
-        self.pushbutton.setText('Изменить')
+        self.pushbutton.setText('Искать')
         self.pushbutton.clicked.connect(self.click)
 
         layout = QVBoxLayout(self)
+        layout.addWidget(self.label1)
         layout.addWidget(self.map_box)
+        layout.addWidget(self.label2)
+        layout.addWidget(self.text)
         layout.addWidget(self.pushbutton)
         layout.addWidget(self.map_label)
 
@@ -31,7 +40,16 @@ class MainWindow(QWidget):
         self.show_map()
 
     def click(self):
-        self.request = Request(self.map_box.currentText())
+        if self.text.text():
+            response = requests.get(
+                "http://geocode-maps.yandex.ru/1.x/?apikey=40d1649f-0493-4b70-98ba-98533de7710b&geocode=" + self.text.text() + "&format=json")
+            if response:
+                json_response = response.json()
+                toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
+                toponym = toponym["Point"]["pos"]
+            self.request = Request(self.map_box.currentText(), toponym.split()[0], toponym.split()[1], str(toponym.split()[0]) + ',' + str(toponym.split()[1]))
+        else:
+            self.request = Request(self.map_box.currentText(), self.request.get_longitude(), self.request.get_latitude(), self.request.get_sp_top())
         self.show_map()
 
     def show_map(self):

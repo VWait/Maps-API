@@ -9,4 +9,5 @@ class YaMapService(IMapService):
     def get_map(self, req:Request):
         return requests.get(self.url, params={'ll': str(req.get_longitude()) + ',' + str(req.get_latitude()),
                                               'z': req.get_zoom(),
-                                              'l': req.get_l()}).content
+                                              'l': req.get_l(),
+                                              'pt': req.get_sp_top()}).content

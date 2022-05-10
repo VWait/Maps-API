@@ -6,11 +6,16 @@ class Request:
     LAT_STEP = 0.008
     LON_STEP = 0.02
 
-    def __init__(self, map):
-        self.longitude = 37.530887
-        self.latitude = 55.703118
+    def __init__(self, map, lon, lat, sp_top):
+        self.longitude = lon
+        self.latitude = lat
         self.zoom = 15
         self.l = map
+        self.sp_top = sp_top
+
+    def get_sp_top(self):
+        return self.sp_top
+
     def get_longitude(self):
         return self.longitude
 
