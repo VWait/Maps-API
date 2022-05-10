@@ -10,8 +10,9 @@ import requests
 class MainWindow(QWidget):
     def __init__(self, app_service: MapAppService, parent=None):
         super().__init__(parent)
+        self.start = ['map', 37.530887, 55.703118, '37.530887,55.703118']
         self.app_service = app_service
-        self.request = Request('map', 37.530887, 55.703118, '37.530887,55.703118')
+        self.request = Request(self.start[0], self.start[1], self.start[2], self.start[3])
         self.init_ui()
 
     def init_ui(self):
@@ -27,6 +28,9 @@ class MainWindow(QWidget):
         self.pushbutton = QPushButton(self)
         self.pushbutton.setText('Искать')
         self.pushbutton.clicked.connect(self.click)
+        self.pushButton = QPushButton(self)
+        self.pushButton.setText('Сброс поискового результата')
+        self.pushButton.clicked.connect(self.click1)
 
         layout = QVBoxLayout(self)
         layout.addWidget(self.label1)
@@ -35,6 +39,7 @@ class MainWindow(QWidget):
         layout.addWidget(self.text)
         layout.addWidget(self.pushbutton)
         layout.addWidget(self.map_label)
+        layout.addWidget(self.pushButton)
 
         self.setLayout(layout)
         self.show_map()
@@ -50,6 +55,12 @@ class MainWindow(QWidget):
             self.request = Request(self.map_box.currentText(), toponym.split()[0], toponym.split()[1], str(toponym.split()[0]) + ',' + str(toponym.split()[1]))
         else:
             self.request = Request(self.map_box.currentText(), self.request.get_longitude(), self.request.get_latitude(), self.request.get_sp_top())
+        self.show_map()
+
+    def click1(self):
+        self.text.setText('')
+        self.map_box.setCurrentText('map')
+        self.request = Request(self.start[0], self.start[1], self.start[2], self.start[3])
         self.show_map()
 
     def show_map(self):
