@@ -24,6 +24,7 @@ class MainWindow(QWidget):
         self.label2 = QLabel(self)
         self.label2.setText('Место:')
         self.text = QLineEdit(self)
+        self.adress = QLabel(self)
         self.map_box.addItems(['map'] + list(set(['sat', 'skl'])))
         self.pushbutton = QPushButton(self)
         self.pushbutton.setText('Искать')
@@ -37,6 +38,7 @@ class MainWindow(QWidget):
         layout.addWidget(self.map_box)
         layout.addWidget(self.label2)
         layout.addWidget(self.text)
+        layout.addWidget(self.adress)
         layout.addWidget(self.pushbutton)
         layout.addWidget(self.map_label)
         layout.addWidget(self.pushButton)
@@ -51,14 +53,17 @@ class MainWindow(QWidget):
             if response:
                 json_response = response.json()
                 toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
+                print(toponym)
+                self.adress.setText('Адерс: ' + toponym['metaDataProperty']['GeocoderMetaData']['Address']['formatted'])
                 toponym = toponym["Point"]["pos"]
-            self.request = Request(self.map_box.currentText(), toponym.split()[0], toponym.split()[1], str(toponym.split()[0]) + ',' + str(toponym.split()[1]))
+                self.request = Request(self.map_box.currentText(), toponym.split()[0], toponym.split()[1], str(toponym.split()[0]) + ',' + str(toponym.split()[1]))
         else:
             self.request = Request(self.map_box.currentText(), self.request.get_longitude(), self.request.get_latitude(), self.request.get_sp_top())
         self.show_map()
 
     def click1(self):
         self.text.setText('')
+        self.adress.setText('')
         self.map_box.setCurrentText('map')
         self.request = Request(self.start[0], self.start[1], self.start[2], self.start[3])
         self.show_map()
